@@ -1,0 +1,84 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage{geometry}
+\usepackage{amsmath}
+\geometry{a4paper, margin=1in}
+
+\title{Trabajo práctico 1 \\ \large Análisis de Lenguajes de Programación}
+
+\author{Sofía Grepachok (G-5949/8) \and Thelma Medrán ()}
+\date{Septiembre 2026}
+
+\begin{document}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Ejercicio 1}
+
+Extendemos la sintaxis abstracta de LIS de la siguiente manera:
+\[
+\begin{array}{rcl}
+\mathit{intexp} & ::= & \mathit{nat} \\
+                & \mid & \mathit{var} \\
+                & \mid & -_u \mathit{intexp} \\
+                & \mid & \mathit{intexp} + \mathit{intexp} \\
+                & \mid & \mathit{intexp} -_b \mathit{intexp} \\
+                & \mid & \mathit{intexp} \times \mathit{intexp} \\
+                & \mid & \mathit{intexp} \div \mathit{intexp} \\
+                & \mid & \mathit{var} \mathbf{++} \\
+                & \mid & \mathit{var} \mathbf{--} 
+\end{array}
+\]
+Análogamente, extendemos la sintaxis concreta:
+\[
+\begin{array}{rcl}
+\mathit{intexp} & ::= & \mathit{nat} \\
+                & \mid & \mathit{var} \\
+                & \mid & \text{'\(-\)' } \mathit{intexp} \\
+                & \mid & \mathit{intexp} \text{ '\(+\)' } \mathit{intexp} \\
+                & \mid & \mathit{intexp} \text{ '\(-\)' } \mathit{intexp} \\
+                & \mid & \mathit{intexp} \text{ '\(*\)' } \mathit{intexp} \\
+                & \mid & \mathit{intexp} \text{ '\(/\)' } \mathit{intexp} \\
+                & \mid & \text{ '\((\)' } \mathit{intexp} \text{ '\()\)' } \\
+                & \mid & \mathit{var} \text{ '\(++\)'} \\
+                & \mid & \mathit{var} \text{ '\(--\)'}                 
+\end{array}
+\]
+Por último, la nueva lista de precedencia queda como sigue:
+
+\begin{center}
+\begin{minipage}{0.3\textwidth}
+\begin{enumerate}
+\setlength\itemsep{0pt}
+\setlength\parskip{0pt}
+    \item $(\mathbf{++} \quad \mathbf{--} \quad -_u)$
+    \item $(* \quad /)$
+    \item $(+ \quad -_b)$
+    \item $(== \quad \neq \quad < \quad >)$
+    \item $!$
+    \item $\&\&$
+    \item $\mid \mid$
+    \item $=$
+    \item $;$
+\end{enumerate}
+\end{minipage}
+\end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Ejercicio 4}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Ejercicio 5}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Ejercicio 6}
+
+
+
+\end{document}

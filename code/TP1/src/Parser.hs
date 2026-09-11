@@ -52,7 +52,24 @@ addop = (reservedOp lis "+" >> return Plus)
   <|> (reservedOp lis "-" >> return Minus)
 
 intterm :: Parser (Exp Int)
-intterm = undefined
+intterm = chainl1 intatom prodop
+
+prodop :: Parser (Exp Int -> Exp Int -> Exp Int)
+prodop = (reservedOp lis "*" >> return Times)
+  <|> (reservedOp lis "/" >> return Div)
+
+intatom :: Parser (Exp Int)
+intatom = parens lis intexp
+          <|> try (do n <- natural lis
+                      return (Const (fromInteger n)))
+          <|> try (do v <- identifier lis
+                      reservedOp lis "++"
+                      return (VarInc v))
+          <|> try (do v <- identifier lis
+                      reservedOp lis "--"
+                      return (VarDec v))
+          <|> do v <- identifier lis
+                 return (Var v)
 
 ------------------------------------
 --- Parser de expresiones booleanas

@@ -1,6 +1,7 @@
 \documentclass[12pt, a4paper]{article}
 \usepackage{geometry}
 \usepackage{amsmath}
+\usepackage{proof}
 \geometry{a4paper, margin=1in}
 
 \title{Trabajo práctico 1 \\ \large Análisis de Lenguajes de Programación}
@@ -85,6 +86,19 @@ Definimos el parser con respecto a esto.
 
 \section*{Ejercicio 4}
 
+Agregamos las extensiones del Ejercicio 1 a la semántica big-step:
+
+\[
+\infer[\textsc{VarInc}]
+  {\langle x{+}{+}, \sigma\rangle \Downarrow_{exp} \langle n+1, [\sigma \mid x : n+1]\rangle}
+  {\langle x, \sigma\rangle \Downarrow_{exp} \langle n, \sigma\rangle}
+\]
+
+\[
+\infer[\textsc{VarDec}]
+  {\langle x{-}{-}, \sigma\rangle \Downarrow_{exp} \langle n-1, [\sigma \mid x : n-1]\rangle}
+  {\langle x, \sigma\rangle \Downarrow_{exp} \langle n, \sigma\rangle}
+\]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

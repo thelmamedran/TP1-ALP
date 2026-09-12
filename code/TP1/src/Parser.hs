@@ -37,6 +37,8 @@ lis = makeTokenParser
                         , "!="
                         , ";"
                         , ","
+                        , "++"
+                        , "--"
                         ]
     }
   )
@@ -76,7 +78,41 @@ intatom = parens lis intexp
 ------------------------------------
 
 boolexp :: Parser (Exp Bool)
-boolexp = undefined
+boolexp = chainl1 boolterm orop
+
+orop :: Parser (Exp Bool -> Exp Bool -> Exp Bool)
+orop = reservedOp lis "||" >> return Or
+
+boolterm :: Parser (Exp Bool)
+boolterm = chainl1 boolfactor andop
+
+andop :: Parser (Exp Bool -> Exp Bool -> Exp Bool)
+andop = reservedOp lis "&&" >> return And
+
+boolfactor :: Parser (Exp Bool)
+boolfactor = (do reservedOp lis "!"
+                 b <- boolfactor
+                 return (Not b))
+         <|> boolatom
+
+boolatom :: Parser (Exp Bool)
+boolatom = (reserved lis "true" >> return BTrue)
+       <|> (reserved lis "false" >> return BFalse)
+       <|> parens lis boolexp
+       <|> boolrel
+
+boolrel :: Parser (Exp Bool)
+boolrel = try (do e1 <- intexp
+                  op <- relop
+                  e2 <- intexp
+                  return (op e1 e2))
+
+relop :: Parser (Exp Int -> Exp Int -> Exp Bool)
+relop = (reservedOp lis "==" >> return Eq)
+    <|> (reservedOp lis "!=" >> return NEq)
+    <|> (reservedOp lis "<" >> return Lt)
+    <|> (reservedOp lis ">" >> return Gt)
+
 
 -----------------------------------
 --- Parser de comandos

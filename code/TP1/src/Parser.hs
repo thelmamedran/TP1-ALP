@@ -119,8 +119,41 @@ relop = (reservedOp lis "==" >> return Eq)
 -----------------------------------
 
 comm :: Parser Comm
-comm = undefined
+comm = chainl1 commterm seqop
 
+seqop :: Parser (Comm -> Comm -> Comm)
+seqop = reservedOp lis ";" >> return Seq
+
+commterm :: Parser Comm
+commterm = skipcmd
+       <|> ifcmd
+       <|> repeatcmd
+       <|> assigncmd
+
+skipcmd :: Parser Comm
+skipcmd = reserved lis "skip" >> return Skip
+
+ifcmd :: Parser Comm
+ifcmd = do reserved lis "if"
+           b <- boolexp
+           c1 <- braces lis comm
+           (do reserved lis "else"
+               c2 <- braces lis comm
+               return (IfThenElse b c1 c2))
+           <|> return (IfThen b c1)
+
+repeatcmd :: Parser Comm
+repeatcmd = do reserved lis "repeat"
+               c <- braces lis comm
+               reserved lis "until"
+               b <- boolexp
+               return (RepeatUntil c b)
+
+assigncmd :: Parser Comm 
+assigncmd = do x <- identifier lis 
+               reservedOp lis "="
+               e <- intexp
+               return (Let x e)
 
 ------------------------------------
 -- Función de parseo

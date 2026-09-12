@@ -2,11 +2,13 @@
 \usepackage{geometry}
 \usepackage{amsmath}
 \usepackage{proof}
+\usepackage{amssymb}
+\usepackage{enumitem}
 \geometry{a4paper, margin=1in}
 
 \title{Trabajo práctico 1 \\ \large Análisis de Lenguajes de Programación}
 
-\author{Sofía Grepachok (G-5949/8) \and Thelma Medrán ()}
+\author{Sofía Grepachok (G-5949/8) \and Thelma Medrán (M-7412/8)}
 \date{Septiembre 2026}
 
 \begin{document}
@@ -72,8 +74,9 @@ Por último, la nueva lista de precedencia queda como sigue:
 Para parsear expresiones enteras debemos primero desambiguar la grámatica para respetar el orden de precendencia y asociar a izquierda: 
 \[
 \begin{array}{lcl}
-exp  & ::= & exp\ \texttt{'+'}\ term \mid exp\ \texttt{'-'}\ term \mid term \\
-term & ::= & term\ \texttt{'*'}\ atom \mid term\ \texttt{'/'}\ atom \mid atom \\
+exp  & ::= & exp\ \texttt{'+'}\ term \mid exp\ \texttt{'$-_b$'}\ term \mid term \\
+term & ::= & term\ \texttt{'*'}\ unary \mid term\ \texttt{'/'}\ unary \mid unary \\
+unary & ::= & \ \texttt{'$-_u$'}\ unary \mid atom \\
 atom & ::= & \texttt{'('}\ exp\ \texttt{')'} \mid nat \mid var\ \texttt{'++'} \mid var\ \texttt{'--'} \\
 digit  & ::= & \texttt{'0'} \mid \texttt{'1'} \mid \cdots \mid \texttt{'9'} \\
 letter & ::= & \texttt{'a'} \mid \cdots \mid \texttt{'Z'} \\
@@ -109,6 +112,90 @@ Agregamos las extensiones del Ejercicio 1 a la semántica big-step:
 
 \section*{Ejercicio 6}
 
+Por simplicidad, definimos
+\[
+c_2 : y\ {=}\ x{+}{+}
+\qquad
+c_3 : \mathbf{if}\ x\ {==}\ 0\ \mathbf{then}\ z\ {=}\ 1\ \mathbf{else}\ z\ {=}\ 0
+\]
 
+Mostramos que $\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^* \langle \mathbf{skip},\ \{x\ {:}\ 1,\ y\ {:}\ 1,\ z\ {:}\ 0\}\rangle$ en seis pasos.
 
+\begin{enumerate}[leftmargin=*]
+
+\item Primero, probamos que $\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto \langle \mathbf{skip};\ c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle$:
+
+\[
+\infer[\textsc{Seq2}]
+  {\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto \langle \mathbf{skip};\ c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle}
+  {\infer[\textsc{Ass}]
+    {\langle x\ {=}\ 0,\ \{\}\rangle \leadsto \langle \mathbf{skip},\ \{x\ {:}\ 0\}\rangle}
+    {\infer[\textsc{NVal}]
+      {\langle 0,\ \{\}\rangle \Downarrow_{exp} \langle 0,\ \{\}\rangle}
+      {}}}
+\]
+
+\item Luego, probamos que $\langle \mathbf{skip};\ c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle \leadsto \langle c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle$:
+
+\[
+\infer[\textsc{Seq1}]
+  {\langle \mathbf{skip};\ c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle \leadsto \langle c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle}
+  {}
+\]
+
+\item Ahora, veamos que $\langle y\ {=}\ x{+}{+};\ c_3,\ \{x\ {:}\ 0\}\rangle \leadsto \langle \mathbf{skip};\ c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle$:
+
+\[
+\infer[\textsc{Seq2}]
+  {\langle y\ {=}\ x{+}{+};\ c_3,\ \{x\ {:}\ 0\}\rangle \leadsto \langle \mathbf{skip};\ c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle}
+  {\infer[\textsc{Ass}]
+    {\langle y\ {=}\ x{+}{+},\ \{x\ {:}\ 0\}\rangle \leadsto \langle \mathbf{skip},\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle}
+    {\infer[\textsc{VarInc}]
+      {\langle x{+}{+},\ \{x\ {:}\ 0\}\rangle \Downarrow_{exp} \langle 1,\ \{x\ {:}\ 1\}\rangle}
+      {\infer[\textsc{Var}]
+        {\langle x,\ \{x\ {:}\ 0\}\rangle \Downarrow_{exp} \langle 0,\ \{x\ {:}\ 0\}\rangle}
+        {x \in \mathrm{dom}\,\{x\ {:}\ 0\}}}}}
+\]
+
+\item Y se tiene que $\langle \mathbf{skip};\ c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \leadsto \langle c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle$:
+
+\[
+\infer[\textsc{Seq1}]
+  {\langle \mathbf{skip};\ c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \leadsto \langle c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle}
+  {}
+\]
+
+\item Probamos que $\langle \mathbf{if}\ x\ {==}\ 0\ \mathbf{then}\ \{z\ {=}\ 1\}\ \mathbf{else}\ \{z\ {=}\ 0\},\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \leadsto \langle z{=}0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle$:
+
+\begin{center}
+\infer[\textsc{If2}]
+  {\langle \mathbf{if}\ x\ {==}\ 0\ \mathbf{then}\ \{z\ {=}\ 1\}\ \mathbf{else}\ \{z\ {=}\ 0\},\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \leadsto \langle z\ {=}\ 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle}
+  {\infer[\textsc{Eq}]
+    {\langle x\ {==}\ 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \Downarrow_{exp} \langle \mathit{false},\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle}
+    {\infer[\textsc{Var}]
+      {\langle x,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \Downarrow_{exp} \langle 1,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle}
+      {x \in \mathrm{dom}\,\{x\ {:}\ 1,\ y\ {:}\ 1\}}
+     &
+     \infer[\textsc{NVal}]
+       {\langle 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \Downarrow_{exp} \langle 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle}
+       {}}}
+\end{center}
+\item Y por último, probamos que $\langle z\ {=}\ 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \leadsto \langle \mathbf{skip},\ \{x\ {:}\ 1,\ y\ {:}\ 1,\ z\ {:}\ 0\}\rangle$:
+
+\[
+\infer[\textsc{Ass}]
+  {\langle z\ {=}\ 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \leadsto \langle \mathbf{skip},\ \{x\ {:}\ 1,\ y\ {:}\ 1,\ z\ {:}\ 0\}\rangle}
+  {\infer[\textsc{NVal}]
+    {\langle 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \Downarrow_{exp} \langle 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle}
+    {}}
+\]
+
+\end{enumerate}
+
+Encadenando los seis pasos anteriores, concluimos
+\[
+\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle
+\leadsto^*
+\langle \mathbf{skip},\ \{x\ {:}\ 1,\ y\ {:}\ 1,\ z\ {:}\ 0\}\rangle
+\]
 \end{document}

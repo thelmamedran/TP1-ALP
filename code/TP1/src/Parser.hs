@@ -54,8 +54,12 @@ addop = (reservedOp lis "+" >> return Plus)
   <|> (reservedOp lis "-" >> return Minus)
 
 intterm :: Parser (Exp Int)
-intterm = chainl1 intatom prodop
+intterm = chainl1 unary prodop
 
+unary :: Parser (Exp Int)
+unary = (reservedOp lis "-" >> UMinus <$> unary)
+    <|> intatom
+    
 prodop :: Parser (Exp Int -> Exp Int -> Exp Int)
 prodop = (reservedOp lis "*" >> return Times)
   <|> (reservedOp lis "/" >> return Div)
@@ -113,7 +117,6 @@ relop = (reservedOp lis "==" >> return Eq)
     <|> (reservedOp lis "<" >> return Lt)
     <|> (reservedOp lis ">" >> return Gt)
 
-
 -----------------------------------
 --- Parser de comandos
 -----------------------------------
@@ -140,7 +143,7 @@ ifcmd = do reserved lis "if"
            (do reserved lis "else"
                c2 <- braces lis comm
                return (IfThenElse b c1 c2))
-           <|> return (IfThen b c1)
+            <|> return (IfThen b c1)
 
 repeatcmd :: Parser Comm
 repeatcmd = do reserved lis "repeat"

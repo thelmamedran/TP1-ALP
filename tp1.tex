@@ -107,8 +107,351 @@ Agregamos las extensiones del Ejercicio 1 a la semántica big-step:
 
 \section*{Ejercicio 5}
 
+Queremos demostrar que la relación $\rightsquigarrow$ es determinista, es decir,
+\[
+\text{Si } \langle c,\sigma\rangle \rightsquigarrow \gamma_1
+\text{ y } \langle c,\sigma\rangle \rightsquigarrow \gamma_2,
+\text{ entonces } \gamma_1=\gamma_2.
+\]
+Hagámoslo por inducción sobre la derivación
+$\langle c,\sigma\rangle \rightsquigarrow \gamma_1$.
+
+\paragraph{Caso Ass.}
+Suponiendo que la última regla aplicada para obtener esta derivación fue \textit{Ass}, entonces $c$ es de la forma $v=e$ para algún $v\in\mathrm{Var}$ y $e\in\mathrm{IntExp}$, y además:
+
+\begin{enumerate}
+    \item[a.] se cumple la premisa 
+    $\langle e,\sigma\rangle \Downarrow_{\mathrm{exp}}
+    \langle n_1,\sigma_1'\rangle$, y
+
+    \item[b.] $\gamma_1 =
+    \left\langle
+    \mathrm{skip},
+    [\sigma_1' \mid v:n_1]
+    \right\rangle$.
+\end{enumerate}
+
+Consideremos ahora la derivación $\langle v=e,\sigma\rangle \rightsquigarrow \gamma_2.$
+Debido a la forma de $c$, la única regla que pudo haber sido aplicada para llegar a ella también es \textit{Ass}. Lo cual implica que:
+\begin{enumerate}
+  \item[c.] se cumple la premisa 
+  $\langle e,\sigma\rangle \Downarrow_{\mathrm{exp}}
+  \langle n_2,\sigma_2'\rangle$, y
+
+  \item[d.] $\gamma_2
+  =
+  \left\langle
+  \mathrm{skip},
+  [\sigma_2' \mid v:n_2]
+  \right\rangle$.
+\end{enumerate}
+
+Como la relación $\Downarrow_{\mathrm{exp}}$ es determinista, por (a) y (c) podemos concluir que 
+$
+\langle n_1,\sigma_1'\rangle
+=
+\langle n_2,\sigma_2'\rangle
+\implies
+n_1=n_2
+\land
+\sigma_1'=\sigma_2',
+$
+y por ende
+
+\[
+\gamma_1
+\underset{\text{(b)}}{=}
+\left\langle
+\mathrm{skip},
+[\sigma_1' \mid v:n_1]
+\right\rangle
+=
+\left\langle
+\mathrm{skip},
+[\sigma_2' \mid v:n_2]
+\right\rangle
+\underset{\text{(d)}}{=}
+\gamma_2.
+\]
+
+
+\paragraph{Caso Seq1.}
+Supongamos que la última regla aplicada fue \textit{Seq1}, y entonces $c$ es de la forma $\mathrm{skip};c_1$ para algún $c_1\in\mathrm{Comm}$ y
+
+\begin{enumerate}
+    \item[a.] $\gamma_1=\langle c_1,\sigma\rangle$.
+\end{enumerate}
+
+Consideremos ahora la derivación
+$
+\langle \mathrm{skip};c_1,\sigma\rangle
+\rightsquigarrow
+\gamma_2.
+$
+Para llegar a ella no se pudo haber aplicado la regla \textit{Seq2}, pues eso implicaría que se satisface una premisa del tipo
+
+\[
+\langle \mathrm{skip},\sigma\rangle
+\rightsquigarrow
+\langle c_0',\sigma'\rangle,
+\]
+lo cual no es posible porque $\mathrm{skip}$ es una forma normal (y entonces no se le puede aplicar ninguna regla de derivación).
+Por la forma de $c$, concluimos que solo se pudo haber aplicado la regla \textit{Seq1}. Por ende,
+
+\begin{enumerate}
+    \item[b.] $\gamma_2=\langle c_1,\sigma\rangle$.
+\end{enumerate}
+
+Por (a) y (b), concluimos que
+
+\[
+\gamma_1=\gamma_2.
+\]
+
+
+\paragraph{Caso Seq2.}
+Supongamos que la última regla aplicada fue \textit{Seq2}, y entonces $c$ es de la forma $c_0;c_1$ para algunos $c_0,c_1\in\mathrm{Comm}$ (con $c_0\neq\mathrm{skip}$). Además
+
+\begin{enumerate}
+    \item[(a)] se cumple la premisa $\langle c_0,\sigma\rangle
+    \rightsquigarrow
+    \langle c_0',\sigma_1'\rangle$, y
+
+    \item[(b)] $\gamma_1
+    =
+    \langle c_0';c_1,\sigma_1'\rangle$.
+\end{enumerate}
+
+Veamos ahora la derivación
+$
+\langle c_0;c_1,\sigma\rangle
+\rightsquigarrow
+\gamma_2.
+$
+Por la forma de $c$, para llegar a ella solo se pudo haber aplicado la regla \textit{Seq2} (no se pudo haber aplicado \textit{Seq1}, pues dijimos que $c_0\neq\mathrm{skip}$), y entonces
+
+\begin{enumerate}
+    \item[(c)] se cumple la premisa $\langle c_0,\sigma\rangle
+    \rightsquigarrow
+    \langle c_0'',\sigma_2'\rangle$, y
+
+    \item[(d)] $\gamma_2
+    =
+    \langle c_0'';c_1,\sigma_2'\rangle$.
+\end{enumerate}
+
+Dado que
+$
+\langle c_0,\sigma\rangle
+\rightsquigarrow
+\langle c_0',\sigma_1'\rangle
+$
+es una subderivación de
+$
+\langle c_0;c_1,\sigma\rangle
+\rightsquigarrow
+\langle c_0';c_1,\sigma_1'\rangle,
+$
+podemos aplicar la hipótesis inductiva. Por (a), (c) y la HI, concluimos que
+
+\[
+\langle c_0',\sigma_1'\rangle
+=
+\langle c_0'',\sigma_2'\rangle
+\implies
+c_0'=c_0''
+\land
+\sigma_1'=\sigma_2'.
+\]
+
+Por ende,
+
+\[
+\gamma_1
+\underset{\text{(b)}}{=}
+\langle c_0';c_1,\sigma_1'\rangle
+=
+\langle c_0'';c_1,\sigma_2'\rangle
+\underset{\text{(d)}}{=}
+\gamma_2.
+\]
+
+
+\paragraph{Caso If1.}
+Supongamos que la última regla aplicada fue \textit{If1}, y entonces $c$ es de la forma $\mathrm{if}\ b\ \mathrm{then}\ c_0\ \mathrm{else}\ c_1$ para algunos $b\in\mathrm{BoolExp}$ y $c_0,c_1\in\mathrm{Comm}$. Además:
+
+\begin{enumerate}
+    \item[a.] se cumple la premisa $\langle b,\sigma\rangle
+    \rightsquigarrow
+    \langle \mathrm{true},\sigma_1'\rangle$, y
+
+    \item[b.] $\gamma_1
+    =
+    \langle c_0,\sigma_1'\rangle$.
+\end{enumerate}
+
+Veamos ahora la derivación
+$
+\left\langle
+\mathrm{if}\ b\ \mathrm{then}\ c_0\ \mathrm{else}\ c_1,\sigma
+\right\rangle
+\rightsquigarrow
+\gamma_2
+$.
+Debido a la forma de $c$, las únicas reglas que pueden aplicarse son
+\textit{If1} e \textit{If2}. Si se hubiese aplicado la regla \textit{If2}, entonces se requeriría la premisa
+
+\begin{enumerate}
+    \item[c.] $\langle b,\sigma\rangle
+    \Downarrow_{\mathrm{exp}}
+    \langle \mathrm{false},\sigma_2'\rangle$.
+\end{enumerate}
+Sin embargo, como la relación $\Downarrow_{\mathrm{exp}}$ es determinista, la evaluación de $\langle b,\sigma\rangle$ siempre produce el mismo resultado. Como $\mathrm{true}\neq\mathrm{false}$, es imposible que la premisa (c) se satisfaga simultáneamente con la (a). Por lo tanto, \textit{If2} no es aplicable, y la regla aplicada para llegar a esta derivación debió haber sido también \textit{If1}. Luego
+
+\begin{enumerate}
+    \item[d.] se cumple la premisa $\langle b,\sigma\rangle
+    \rightsquigarrow
+    \langle \mathrm{true},\sigma_2'\rangle$, y
+
+    \item[e.] $\gamma_2
+    =
+    \langle c_0,\sigma_2'\rangle$.
+\end{enumerate}
+
+Dado que la relación $\Downarrow_{\mathrm{exp}}$ es determinista, por (a) y (d) podemos concluir que
+
+\[
+\langle \mathrm{true},\sigma_1'\rangle
+=
+\langle \mathrm{true},\sigma_2'\rangle
+\implies
+\sigma_1'=\sigma_2',
+\]
+
+y por ende,
+
+\[
+\gamma_1
+\underset{\text{(b)}}{=}
+\langle c_0,\sigma_1'\rangle
+=
+\langle c_0,\sigma_2'\rangle
+\underset{\text{(e)}}{=}
+\gamma_2.
+\]
+
+
+\paragraph{Caso If1.}
+Supongamos que la última regla aplicada fue \textit{If2}, y entonces $c$ es de la forma $\mathrm{if}\ b\ \mathrm{then}\ c_0\ \mathrm{else}\ c_1$ para algunos $b\in\mathrm{BoolExp}$ y $c_0,c_1\in\mathrm{Comm}$. Además:
+
+\begin{enumerate}
+    \item[a.] se cumple la premisa $\langle b,\sigma\rangle
+    \rightsquigarrow
+    \langle \mathrm{false},\sigma_1'\rangle$, y
+
+    \item[b.] $\gamma_1
+    =
+    \langle c_0,\sigma_1'\rangle$.
+\end{enumerate}
+
+Veamos ahora la derivación
+$
+\left\langle
+\mathrm{if}\ b\ \mathrm{then}\ c_0\ \mathrm{else}\ c_1,\sigma
+\right\rangle
+\rightsquigarrow
+\gamma_2
+$.
+Debido a la forma de $c$, las únicas reglas que pueden aplicarse son
+\textit{If1} e \textit{If2}. Si se hubiese aplicado la regla \textit{If1}, entonces se requeriría la premisa
+
+\begin{enumerate}
+    \item[c.] $\langle b,\sigma\rangle
+    \Downarrow_{\mathrm{exp}}
+    \langle \mathrm{true},\sigma_2'\rangle$.
+\end{enumerate}
+Sin embargo, como la relación $\Downarrow_{\mathrm{exp}}$ es determinista, la evaluación de $\langle b,\sigma\rangle$ siempre produce el mismo resultado. Como $\mathrm{true}\neq\mathrm{false}$, es imposible que la premisa (c) se satisfaga simultáneamente con la (a). Por lo tanto, \textit{If1} no es aplicable, y la regla aplicada para llegar a esta derivación debió haber sido también \textit{If2}. Luego
+
+\begin{enumerate}
+    \item[d.] se cumple la premisa $\langle b,\sigma\rangle
+    \rightsquigarrow
+    \langle \mathrm{false},\sigma_2'\rangle$, y
+
+    \item[e.] $\gamma_2
+    =
+    \langle c_0,\sigma_2'\rangle$.
+\end{enumerate}
+
+Dado que la relación $\Downarrow_{\mathrm{exp}}$ es determinista, por (a) y (d) podemos concluir que
+
+\[
+\langle \mathrm{false},\sigma_1'\rangle
+=
+\langle \mathrm{false},\sigma_2'\rangle
+\implies
+\sigma_1'=\sigma_2',
+\]
+
+y por ende,
+
+\[
+\gamma_1
+\underset{\text{(b)}}{=}
+\langle c_0,\sigma_1'\rangle
+=
+\langle c_0,\sigma_2'\rangle
+\underset{\text{(e)}}{=}
+\gamma_2.
+\]
+
+
+\paragraph{Caso Repeat.}
+Supongamos que la última regla aplicada en la derivación fue \textit{Repeat}, y entonces $c$ tiene la forma $\mathrm{repeat}\ c_0\ \mathrm{until}\ b$
+para algún $c_0\in\mathrm{Comm}$ y $b\in\mathrm{BoolExp}$. Además,
+
+\begin{enumerate}
+    \item[a.] $\gamma_1
+    =
+    \left\langle
+    c_0;\mathrm{if}\ b\ \mathrm{then}\ \mathrm{skip}\ \mathrm{else}\
+    \mathrm{repeat}\ c_0\ \mathrm{until}\ b,
+    \sigma
+    \right\rangle$.
+\end{enumerate}
+
+Veamos ahora la derivación
+$
+\left\langle
+\mathrm{repeat}\ c_0\ \mathrm{until}\ b,\sigma
+\right\rangle
+\rightsquigarrow
+\gamma_2
+$.
+Debido a la forma de $c$, la última regla aplicada debió ser también \textit{Repeat}, obteniendo:
+
+\begin{enumerate}
+    \item[b.] $\gamma_2
+    =
+    \left\langle
+    c_0;\mathrm{if}\ b\ \mathrm{then}\ \mathrm{skip}\ \mathrm{else}\
+    \mathrm{repeat}\ c_0\ \mathrm{until}\ b,
+    \sigma
+    \right\rangle$.
+\end{enumerate}
+
+Por (a) y (b), concluimos que
+
+\[
+\gamma_1=\gamma_2.
+\]
+
+\bigskip
+Habiendo cubierto todas las reglas de inferencia y viendo que en todos los casos llegamos a lo mismo, concluimos que la relación de transición $\rightsquigarrow$ es determinista.
+\hfill $\square$
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \section*{Ejercicio 6}
 

@@ -29,7 +29,7 @@ update = M.insert
 eval :: Comm -> Either Error State
 eval p = stepCommStar p initState
 
--- Evalúa múltiples pasos de un comnado en un estado,
+-- Evalúa múltiples pasos de un comando en un estado,
 -- hasta alcanzar un Skip
 stepCommStar :: Comm -> State -> Either Error State
 stepCommStar Skip s = return s

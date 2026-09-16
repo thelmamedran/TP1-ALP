@@ -4,6 +4,7 @@
 \usepackage{proof}
 \usepackage{amssymb}
 \usepackage{enumitem}
+\usepackage{adjustbox}
 \geometry{a4paper, margin=1in}
 
 \title{Trabajo práctico 1 \\ \large Análisis de Lenguajes de Programación}
@@ -486,6 +487,27 @@ Mostramos que $\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^* \langle \m
   {}
 \]
 
+Por la regla que dice que todo paso simple es también un paso con la clausura reflexivo-transitiva, cada uno de los dos pasos anteriores vale también con $\leadsto^{*}$:
+\[
+\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^{*} \langle \mathbf{skip};\ c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle
+\qquad\text{y}\qquad
+\langle \mathbf{skip};\ c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle \leadsto^{*} \langle c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle
+\]
+
+Luego, por transitividad de $\leadsto^{*}$:
+
+\[
+\begin{adjustbox}{max width=\textwidth}
+$\infer[\textsc{Trans}]
+  {\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^{*} \langle c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle}
+  {
+    \langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^{*} \langle \mathbf{skip};\ c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle
+    &
+    \langle \mathbf{skip};\ c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle \leadsto^{*} \langle c_2;\ c_3,\ \{x\ {:}\ 0\}\rangle
+  }$
+\end{adjustbox}
+\]
+
 \item Ahora, veamos que $\langle y\ {=}\ x{+}{+};\ c_3,\ \{x\ {:}\ 0\}\rangle \leadsto \langle \mathbf{skip};\ c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle$:
 
 \[
@@ -500,12 +522,36 @@ Mostramos que $\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^* \langle \m
         {x \in \mathrm{dom}\,\{x\ {:}\ 0\}}}}}
 \]
 
-\item Y se tiene que $\langle \mathbf{skip};\ c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \leadsto \langle c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle$:
+Combinando con el resultado anterior:
+
+\[
+\begin{adjustbox}{max width=\textwidth}
+\infer[\textsc{Trans}]
+  {\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^{*} \langle \mathbf{skip};\ c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle}
+  {
+    \langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^{*} \langle y\ {=}\ x{+}{+};\ c_3,\ \{x\ {:}\ 0\}\rangle
+    &
+    \langle y\ {=}\ x{+}{+};\ c_3,\ \{x\ {:}\ 0\}\rangle \leadsto^{*} \langle \mathbf{skip};\ c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle
+  }
+\end{adjustbox}
+\]
+
+concluimos:
+\[
+\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^{*} \langle \mathbf{skip};\ c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle
+\]
+
+\item Ahora probamos que $\langle \mathbf{skip};\ c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \leadsto \langle c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle$:
 
 \[
 \infer[\textsc{Seq1}]
   {\langle \mathbf{skip};\ c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \leadsto \langle c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle}
   {}
+\]
+
+Por transitividad,
+\[
+\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^{*} \langle c_3,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle
 \]
 
 \item Probamos que $\langle \mathbf{if}\ x\ {==}\ 0\ \mathbf{then}\ \{z\ {=}\ 1\}\ \mathbf{else}\ \{z\ {=}\ 0\},\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \leadsto \langle z{=}0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle$:
@@ -523,6 +569,13 @@ Mostramos que $\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^* \langle \m
        {\langle 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \Downarrow_{exp} \langle 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle}
        {}}}
 \end{center}
+
+Nuevamente por transitividad,
+\[
+\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^{*} \langle z\ {=}\ 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle
+\]
+
+
 \item Y por último, probamos que $\langle z\ {=}\ 0,\ \{x\ {:}\ 1,\ y\ {:}\ 1\}\rangle \leadsto \langle \mathbf{skip},\ \{x\ {:}\ 1,\ y\ {:}\ 1,\ z\ {:}\ 0\}\rangle$:
 
 \[
@@ -533,12 +586,9 @@ Mostramos que $\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^* \langle \m
     {}}
 \]
 
-\end{enumerate}
-
-Encadenando los seis pasos anteriores, concluimos
+Por lo que, por transitividad, finalmente concluimos:
 \[
-\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle
-\leadsto^*
-\langle \mathbf{skip},\ \{x\ {:}\ 1,\ y\ {:}\ 1,\ z\ {:}\ 0\}\rangle
+\langle x\ {=}\ 0;\ c_2;\ c_3,\ \{\}\rangle \leadsto^{*} \langle \mathbf{skip},\ \{x\ {:}\ 1,\ y\ {:}\ 1,\ z\ {:}\ 0\}\rangle
 \]
+\end{enumerate}
 \end{document}

@@ -56,7 +56,8 @@ Por último, la nueva lista de precedencia queda como sigue:
 \begin{enumerate}
 \setlength\itemsep{0pt}
 \setlength\parskip{0pt}
-    \item $(\mathbf{++} \quad \mathbf{--} \quad -_u)$
+    \item $(\mathbf{++} \quad \mathbf{--})$
+    \item $-_u$
     \item $(* \quad /)$
     \item $(+ \quad -_b)$
     \item $(== \quad \neq \quad < \quad >)$
@@ -117,44 +118,52 @@ Queremos demostrar que la relación $\rightsquigarrow$ es determinista, es decir
 Hagámoslo por inducción sobre la derivación
 $\langle c,\sigma\rangle \rightsquigarrow \gamma_1$.
 
-\paragraph{Caso Ass.}
-Suponiendo que la última regla aplicada para obtener esta derivación fue \textit{Ass}, entonces $c$ es de la forma $v=e$ para algún $v\in\mathrm{Var}$ y $e\in\mathrm{IntExp}$, y además:
+\paragraph{\underline{Caso Ass}.}
+Supongamos que la última regla aplicada para obtener esta derivación fue
 
+\[
+  \infer[\textsc{Ass}]{\langle v = e, \sigma \rangle \rightsquigarrow \langle \textbf{skip}, [\sigma' \mid v: n] \rangle}{\langle e, \sigma \rangle \Downarrow_{\text{exp}} \langle n, \sigma' \rangle}
+\]
+y entonces podemos reescribir al comando $c$ como $v=e$ (con $v\in\mathrm{Var}$ y $e\in\mathrm{IntExp}$). Además
 \begin{enumerate}
     \item[a.] se cumple la premisa 
-    $\langle e,\sigma\rangle \Downarrow_{\mathrm{exp}}
+    $\langle e,\sigma\rangle \Downarrow_{\text{exp}}
     \langle n_1,\sigma_1'\rangle$, y
 
     \item[b.] $\gamma_1 =
     \left\langle
-    \mathrm{skip},
+    \textbf{skip},
     [\sigma_1' \mid v:n_1]
     \right\rangle$.
 \end{enumerate}
 
-Consideremos ahora la derivación $\langle v=e,\sigma\rangle \rightsquigarrow \gamma_2.$
-Debido a la forma de $c$, la única regla que pudo haber sido aplicada para llegar a ella también es \textit{Ass}. Lo cual implica que:
+Consideremos ahora la otra derivación, $\langle v=e,\sigma\rangle \rightsquigarrow \gamma_2.$
+La única regla que la pudo haber generado, debido a la forma de $c$, es \textsc{Ass} (pues es la única regla para el comando de asignación). Por ende:
 \begin{enumerate}
   \item[c.] se cumple la premisa 
-  $\langle e,\sigma\rangle \Downarrow_{\mathrm{exp}}
+  $\langle e,\sigma\rangle \Downarrow_{\text{exp}}
   \langle n_2,\sigma_2'\rangle$, y
 
   \item[d.] $\gamma_2
   =
   \left\langle
-  \mathrm{skip},
+  \textbf{skip},
   [\sigma_2' \mid v:n_2]
   \right\rangle$.
 \end{enumerate}
 
-Como la relación $\Downarrow_{\mathrm{exp}}$ es determinista, por (a) y (c) podemos concluir que 
+Como la relación $\Downarrow_{\mathrm{exp}}$ es determinista, por (a) y (c) concluimos que
 $
 \langle n_1,\sigma_1'\rangle
 =
 \langle n_2,\sigma_2'\rangle
-\implies
+$,
+lo que implica que
+$
 n_1=n_2
-\land
+$
+y
+$
 \sigma_1'=\sigma_2',
 $
 y por ende
@@ -163,12 +172,12 @@ y por ende
 \gamma_1
 \underset{\text{(b)}}{=}
 \left\langle
-\mathrm{skip},
+\textbf{skip},
 [\sigma_1' \mid v:n_1]
 \right\rangle
 =
 \left\langle
-\mathrm{skip},
+\textbf{skip},
 [\sigma_2' \mid v:n_2]
 \right\rangle
 \underset{\text{(d)}}{=}
@@ -176,8 +185,13 @@ y por ende
 \]
 
 
-\paragraph{Caso Seq1.}
-Supongamos que la última regla aplicada fue \textit{Seq1}, y entonces $c$ es de la forma $\mathrm{skip};c_1$ para algún $c_1\in\mathrm{Comm}$ y
+\paragraph{\underline{Caso Seq1}.}
+Supongamos que la última regla aplicada fue
+
+\[
+  \infer[\textsc{Seq1}]{\langle \textbf{skip}; c_1, \sigma \rangle \rightsquigarrow \langle c_1, \sigma \rangle}{}
+\]
+entonces $c = \mathrm{skip};c_1$ (con $c_1\in\mathrm{Comm}$) y
 
 \begin{enumerate}
     \item[a.] $\gamma_1=\langle c_1,\sigma\rangle$.
@@ -189,36 +203,36 @@ $
 \rightsquigarrow
 \gamma_2.
 $
-Para llegar a ella no se pudo haber aplicado la regla \textit{Seq2}, pues eso implicaría que se satisface una premisa del tipo
-
+Por la forma de $c$, las únicas reglas aplicables podrían ser \textsc{Seq1} o \textsc{Seq2}. Sin embargo, \textsc{Seq2} queda descartada, pues requeriría que se cumpla la premisa 
 \[
-\langle \mathrm{skip},\sigma\rangle
+\langle \textbf{skip},\sigma\rangle
 \rightsquigarrow
 \langle c_0',\sigma'\rangle,
 \]
-lo cual no es posible porque $\mathrm{skip}$ es una forma normal (y entonces no se le puede aplicar ninguna regla de derivación).
-Por la forma de $c$, concluimos que solo se pudo haber aplicado la regla \textit{Seq1}. Por ende,
+lo cual no es posible, pues no hay ninguna regla de transición definida para el comando $\textbf{skip}$.
+Concluimos entonces que la única regla que pudo haber sido aplicada es \textsc{Seq1}. Por ende,
 
 \begin{enumerate}
     \item[b.] $\gamma_2=\langle c_1,\sigma\rangle$.
 \end{enumerate}
 
-Por (a) y (b), concluimos que
+Por (a) y (b), concluimos que 
 
+\[\gamma_1=\gamma_2.\]
+
+
+\paragraph{\underline{Caso Seq2}.}
+Supongamos que la última regla aplicada fue 
 \[
-\gamma_1=\gamma_2.
+  \infer[\textsc{Seq2}]{\langle c_0; c_1, \sigma \rangle \rightsquigarrow \langle c'_0; c_1, \sigma' \rangle}{\langle c_0, \sigma \rangle \rightsquigarrow \langle c'_0, \sigma' \rangle}
 \]
-
-
-\paragraph{Caso Seq2.}
-Supongamos que la última regla aplicada fue \textit{Seq2}, y entonces $c$ es de la forma $c_0;c_1$ para algunos $c_0,c_1\in\mathrm{Comm}$ (con $c_0\neq\mathrm{skip}$). Además
-
+y entonces $c = c_0;c_1$ (con $c_0,c_1\in\mathrm{Comm}$ y también con $c_0\neq\textbf{skip}$, por lo explicado en el item anterior). Además
 \begin{enumerate}
-    \item[(a)] se cumple la premisa $\langle c_0,\sigma\rangle
+    \item[a.] se cumple la premisa $\langle c_0,\sigma\rangle
     \rightsquigarrow
     \langle c_0',\sigma_1'\rangle$, y
 
-    \item[(b)] $\gamma_1
+    \item[b.] $\gamma_1
     =
     \langle c_0';c_1,\sigma_1'\rangle$.
 \end{enumerate}
@@ -229,14 +243,14 @@ $
 \rightsquigarrow
 \gamma_2.
 $
-Por la forma de $c$, para llegar a ella solo se pudo haber aplicado la regla \textit{Seq2} (no se pudo haber aplicado \textit{Seq1}, pues dijimos que $c_0\neq\mathrm{skip}$), y entonces
+Como $c_0 \neq \textbf{skip}$, \textsc{Seq1} no es aplicable, por lo que la única regla que pudo haber generado esta derivación es \textsc{Seq2}, y entonces
 
 \begin{enumerate}
-    \item[(c)] se cumple la premisa $\langle c_0,\sigma\rangle
+    \item[c.] se cumple la premisa $\langle c_0,\sigma\rangle
     \rightsquigarrow
     \langle c_0'',\sigma_2'\rangle$, y
 
-    \item[(d)] $\gamma_2
+    \item[d.] $\gamma_2
     =
     \langle c_0'';c_1,\sigma_2'\rangle$.
 \end{enumerate}
@@ -253,19 +267,27 @@ $
 \rightsquigarrow
 \langle c_0';c_1,\sigma_1'\rangle,
 $
-podemos aplicar la hipótesis inductiva. Por (a), (c) y la HI, concluimos que
-
+podemos aplicar la hipótesis inductiva, la cual nos dice que:
 \[
+\text{Si } \langle c_0,\sigma\rangle \rightsquigarrow \langle c_0',\sigma_1'\rangle
+\text{ y } \langle c_0,\sigma\rangle \rightsquigarrow \langle c_0'',\sigma_2'\rangle,
+\text{ entonces } \langle c_0',\sigma_1'\rangle = \langle c_0'',\sigma_2'\rangle.
+\]
+
+Por (a), (c) y la HI,
+$
 \langle c_0',\sigma_1'\rangle
 =
 \langle c_0'',\sigma_2'\rangle
-\implies
+$
+y entonces
+$
 c_0'=c_0''
-\land
-\sigma_1'=\sigma_2'.
-\]
-
-Por ende,
+$
+y
+$
+\sigma_1'=\sigma_2'
+$. Concluimos que
 
 \[
 \gamma_1
@@ -278,13 +300,17 @@ Por ende,
 \]
 
 
-\paragraph{Caso If1.}
-Supongamos que la última regla aplicada fue \textit{If1}, y entonces $c$ es de la forma $\mathrm{if}\ b\ \mathrm{then}\ c_0\ \mathrm{else}\ c_1$ para algunos $b\in\mathrm{BoolExp}$ y $c_0,c_1\in\mathrm{Comm}$. Además:
+\paragraph{\underline{Caso If1}.}
+Supongamos que la última regla aplicada fue
 
-\begin{enumerate}
+\[
+  \infer[\textsc{If1}]{\langle \textbf{if } b \textbf{ then } c_0 \textbf{ else } c_1, \sigma \rangle \rightsquigarrow \langle c_0, \sigma' \rangle}{\langle b, \sigma \rangle \Downarrow_{\text{exp}} \langle \textbf{true}, \sigma' \rangle}
+\]
+entonces $c = \textbf{if}\ b\ \textbf{then}\ c_0\ \textbf{else}\ c_1$ (con $b\in\mathrm{BoolExp}$ y $c_0,c_1\in\mathrm{Comm}$). Además:
+\begin{enumerate}[itemsep=0pt]
     \item[a.] se cumple la premisa $\langle b,\sigma\rangle
-    \rightsquigarrow
-    \langle \mathrm{true},\sigma_1'\rangle$, y
+    \Downarrow_{\mathrm{exp}}
+    \langle \textbf{true},\sigma_1'\rangle$, y
 
     \item[b.] $\gamma_1
     =
@@ -294,25 +320,25 @@ Supongamos que la última regla aplicada fue \textit{If1}, y entonces $c$ es de 
 Veamos ahora la derivación
 $
 \left\langle
-\mathrm{if}\ b\ \mathrm{then}\ c_0\ \mathrm{else}\ c_1,\sigma
+\textbf{if}\ b\ \textbf{then}\ c_0\ \textbf{else}\ c_1,\sigma
 \right\rangle
 \rightsquigarrow
 \gamma_2
 $.
 Debido a la forma de $c$, las únicas reglas que pueden aplicarse son
-\textit{If1} e \textit{If2}. Si se hubiese aplicado la regla \textit{If2}, entonces se requeriría la premisa
+\textsc{If1} e \textsc{If2}. Si se hubiese aplicado la regla \textsc{If2}, entonces se cumpliría la premisa
 
 \begin{enumerate}
     \item[c.] $\langle b,\sigma\rangle
     \Downarrow_{\mathrm{exp}}
-    \langle \mathrm{false},\sigma_2'\rangle$.
+    \langle \textbf{false},\sigma_2'\rangle$.
 \end{enumerate}
-Sin embargo, como la relación $\Downarrow_{\mathrm{exp}}$ es determinista, la evaluación de $\langle b,\sigma\rangle$ siempre produce el mismo resultado. Como $\mathrm{true}\neq\mathrm{false}$, es imposible que la premisa (c) se satisfaga simultáneamente con la (a). Por lo tanto, \textit{If2} no es aplicable, y la regla aplicada para llegar a esta derivación debió haber sido también \textit{If1}. Luego
+Sin embargo, la relación $\Downarrow_{\mathrm{exp}}$ es determinista, y como $\textbf{true} \neq \textbf{false}$, es imposible que tanto (a) como (c) se satisfagan a la vez. Por lo tanto, la regla aplicada para obtener esta derivación debió haber sido también \textsc{If1}. Luego
 
-\begin{enumerate}
+\begin{enumerate}[itemsep=0pt]
     \item[d.] se cumple la premisa $\langle b,\sigma\rangle
-    \rightsquigarrow
-    \langle \mathrm{true},\sigma_2'\rangle$, y
+    \Downarrow_{\mathrm{exp}}
+    \langle \textbf{true},\sigma_2'\rangle$, y
 
     \item[e.] $\gamma_2
     =
@@ -322,14 +348,14 @@ Sin embargo, como la relación $\Downarrow_{\mathrm{exp}}$ es determinista, la e
 Dado que la relación $\Downarrow_{\mathrm{exp}}$ es determinista, por (a) y (d) podemos concluir que
 
 \[
-\langle \mathrm{true},\sigma_1'\rangle
+\langle \textbf{true},\sigma_1'\rangle
 =
-\langle \mathrm{true},\sigma_2'\rangle
+\langle \textbf{true},\sigma_2'\rangle
 \implies
 \sigma_1'=\sigma_2',
 \]
 
-y por ende,
+y por ende
 
 \[
 \gamma_1
@@ -342,13 +368,17 @@ y por ende,
 \]
 
 
-\paragraph{Caso If1.}
-Supongamos que la última regla aplicada fue \textit{If2}, y entonces $c$ es de la forma $\mathrm{if}\ b\ \mathrm{then}\ c_0\ \mathrm{else}\ c_1$ para algunos $b\in\mathrm{BoolExp}$ y $c_0,c_1\in\mathrm{Comm}$. Además:
+\paragraph{\underline{Caso If2}.}
+Supongamos que la última regla aplicada fue
 
+\[
+  \infer[\textsc{If2}]{\langle \textbf{if } b \textbf{ then } c_0 \textbf{ else } c_1, \sigma \rangle \rightsquigarrow \langle c_1, \sigma' \rangle}{\langle b, \sigma \rangle \Downarrow_{\text{exp}} \langle \textbf{false}, \sigma' \rangle}
+\]
+entonces $c = \textbf{if}\ b\ \textbf{then}\ c_0\ \textbf{else}\ c_1$ (con $b\in\mathrm{BoolExp}$ y $c_0,c_1\in\mathrm{Comm}$). Además:
 \begin{enumerate}
     \item[a.] se cumple la premisa $\langle b,\sigma\rangle
-    \rightsquigarrow
-    \langle \mathrm{false},\sigma_1'\rangle$, y
+    \Downarrow_{\mathrm{exp}}
+    \langle \textbf{false},\sigma_1'\rangle$, y
 
     \item[b.] $\gamma_1
     =
@@ -358,25 +388,25 @@ Supongamos que la última regla aplicada fue \textit{If2}, y entonces $c$ es de 
 Veamos ahora la derivación
 $
 \left\langle
-\mathrm{if}\ b\ \mathrm{then}\ c_0\ \mathrm{else}\ c_1,\sigma
+\textbf{if}\ b\ \textbf{then}\ c_0\ \textbf{else}\ c_1,\sigma
 \right\rangle
 \rightsquigarrow
 \gamma_2
 $.
 Debido a la forma de $c$, las únicas reglas que pueden aplicarse son
-\textit{If1} e \textit{If2}. Si se hubiese aplicado la regla \textit{If1}, entonces se requeriría la premisa
+\textsc{If1} e \textsc{If2}. Si se hubiese aplicado la regla \textsc{If1}, entonces se cumpliría la premisa
 
 \begin{enumerate}
     \item[c.] $\langle b,\sigma\rangle
     \Downarrow_{\mathrm{exp}}
-    \langle \mathrm{true},\sigma_2'\rangle$.
+    \langle \textbf{true},\sigma_2'\rangle$.
 \end{enumerate}
-Sin embargo, como la relación $\Downarrow_{\mathrm{exp}}$ es determinista, la evaluación de $\langle b,\sigma\rangle$ siempre produce el mismo resultado. Como $\mathrm{true}\neq\mathrm{false}$, es imposible que la premisa (c) se satisfaga simultáneamente con la (a). Por lo tanto, \textit{If1} no es aplicable, y la regla aplicada para llegar a esta derivación debió haber sido también \textit{If2}. Luego
+Sin embargo, la relación $\Downarrow_{\mathrm{exp}}$ es determinista, y como $\textbf{false} \neq \textbf{true}$, es imposible que tanto (a) como (c) se satisfagan a la vez. Por lo tanto, la regla aplicada para obtener esta derivación debió haber sido también \textsc{If2}. Luego
 
 \begin{enumerate}
     \item[d.] se cumple la premisa $\langle b,\sigma\rangle
-    \rightsquigarrow
-    \langle \mathrm{false},\sigma_2'\rangle$, y
+    \Downarrow_{\mathrm{exp}}
+    \langle \textbf{false},\sigma_2'\rangle$, y
 
     \item[e.] $\gamma_2
     =
@@ -386,14 +416,14 @@ Sin embargo, como la relación $\Downarrow_{\mathrm{exp}}$ es determinista, la e
 Dado que la relación $\Downarrow_{\mathrm{exp}}$ es determinista, por (a) y (d) podemos concluir que
 
 \[
-\langle \mathrm{false},\sigma_1'\rangle
+\langle \textbf{false},\sigma_1'\rangle
 =
-\langle \mathrm{false},\sigma_2'\rangle
+\langle \textbf{false},\sigma_2'\rangle
 \implies
 \sigma_1'=\sigma_2',
 \]
 
-y por ende,
+y por ende
 
 \[
 \gamma_1
@@ -406,16 +436,19 @@ y por ende,
 \]
 
 
-\paragraph{Caso Repeat.}
-Supongamos que la última regla aplicada en la derivación fue \textit{Repeat}, y entonces $c$ tiene la forma $\mathrm{repeat}\ c_0\ \mathrm{until}\ b$
-para algún $c_0\in\mathrm{Comm}$ y $b\in\mathrm{BoolExp}$. Además,
+\paragraph{\underline{Caso Repeat}.}
+Supongamos que la última regla aplicada en la derivación fue 
 
+\[
+  \infer[\textsc{Repeat}]{\langle \textbf{repeat } c_0 \textbf{ until } b, \sigma \rangle \rightsquigarrow \langle c_0; \textbf{if } b \textbf{ then skip else repeat } c_0 \textbf{ until } b, \sigma \rangle}{}
+\]
+y entonces $c = \mathrm{repeat}\ c_0\ \mathrm{until}\ b$
+(con $c_0\in\mathrm{Comm}$ y $b\in\mathrm{BoolExp}$). Además,
 \begin{enumerate}
     \item[a.] $\gamma_1
     =
     \left\langle
-    c_0;\mathrm{if}\ b\ \mathrm{then}\ \mathrm{skip}\ \mathrm{else}\
-    \mathrm{repeat}\ c_0\ \mathrm{until}\ b,
+    c_0;\textbf{if}\ b\ \textbf{then skip else repeat}\ c_0\ \textbf{until}\ b,
     \sigma
     \right\rangle$.
 \end{enumerate}
@@ -423,32 +456,32 @@ para algún $c_0\in\mathrm{Comm}$ y $b\in\mathrm{BoolExp}$. Además,
 Veamos ahora la derivación
 $
 \left\langle
-\mathrm{repeat}\ c_0\ \mathrm{until}\ b,\sigma
+\textbf{repeat}\ c_0\ \textbf{until}\ b,\sigma
 \right\rangle
 \rightsquigarrow
 \gamma_2
 $.
-Debido a la forma de $c$, la última regla aplicada debió ser también \textit{Repeat}, obteniendo:
+Debido a la forma de $c$, la última regla aplicada debió ser también \textsc{Repeat}, obteniendo
 
 \begin{enumerate}
     \item[b.] $\gamma_2
     =
     \left\langle
-    c_0;\mathrm{if}\ b\ \mathrm{then}\ \mathrm{skip}\ \mathrm{else}\
-    \mathrm{repeat}\ c_0\ \mathrm{until}\ b,
+    c_0;\textbf{if}\ b\ \textbf{then skip else repeat}\ c_0\ \textbf{until}\ b,
     \sigma
     \right\rangle$.
 \end{enumerate}
 
 Por (a) y (b), concluimos que
-
 \[
 \gamma_1=\gamma_2.
 \]
 
 \bigskip
-Habiendo cubierto todas las reglas de inferencia y viendo que en todos los casos llegamos a lo mismo, concluimos que la relación de transición $\rightsquigarrow$ es determinista.
+\bigskip
+Habiendo analizado todas las reglas de inferencia aplicables y demostrado que en cada caso se cumple que $\gamma_1 = \gamma_2$, por el principio de inducción sobre la derivación de evaluación concluimos que la relación de transición $\rightsquigarrow$ es determinista.
 \hfill $\square$
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

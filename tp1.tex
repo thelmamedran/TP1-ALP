@@ -71,23 +71,6 @@ Por último, la nueva lista de precedencia queda como sigue:
 \end{center}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Ejercicio 3}
-
-Para parsear expresiones enteras debemos primero desambiguar la grámatica para respetar el orden de precendencia y asociar a izquierda: 
-\[
-\begin{array}{lcl}
-exp  & ::= & exp\ \texttt{'+'}\ term \mid exp\ \texttt{'$-_b$'}\ term \mid term \\
-term & ::= & term\ \texttt{'*'}\ unary \mid term\ \texttt{'/'}\ unary \mid unary \\
-unary & ::= & \ \texttt{'$-_u$'}\ unary \mid atom \\
-atom & ::= & \texttt{'('}\ exp\ \texttt{')'} \mid nat \mid var\ \texttt{'++'} \mid var\ \texttt{'--'} \\
-digit  & ::= & \texttt{'0'} \mid \texttt{'1'} \mid \cdots \mid \texttt{'9'} \\
-letter & ::= & \texttt{'a'} \mid \cdots \mid \texttt{'Z'} \\
-nat  & ::= & digit \mid digit\ nat \\
-var  & ::= & letter \mid letter\ var \\
-\end{array}
-\]
-
-Definimos el parser con respecto a esto.
 
 \section*{Ejercicio 4}
 

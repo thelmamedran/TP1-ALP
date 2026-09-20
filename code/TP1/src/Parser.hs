@@ -46,6 +46,19 @@ lis = makeTokenParser
 -----------------------------------
 --- Parser de expresiones enteras
 -----------------------------------
+
+{-
+Escribimos el parser en base a esta gramática desambiguada
+exp ::= exp '+' term | exp '−' term | term
+term ::= term '*' unary | term '/' unary | unary
+unary ::= '−' unary | atom
+atom ::= '(' exp ')' | nat | var '++' | var '--' | var
+digit ::= '0' | '1' | · · · | '9'
+letter ::= 'a' | · · · | 'Z'
+nat ::= digit | digit nat
+var ::= letter | letter var
+-}
+
 intexp :: Parser (Exp Int)
 intexp = chainl1 intterm addop
 
@@ -80,6 +93,16 @@ intatom = parens lis intexp
 ------------------------------------
 --- Parser de expresiones booleanas
 ------------------------------------
+
+{-
+Escribimos el parser en base a esta gramática desambiguada
+boolexp    ::= boolexp '||' boolterm | boolterm
+boolterm   ::= boolterm '&&' boolfactor | boolfactor
+boolfactor ::= '!' boolfactor | boolatom
+boolatom   ::= 'true' | 'false' | '(' boolexp ')' | boolrel
+boolrel    ::= intexp relop intexp
+relop      ::= '==' | '!=' | '<' | '>'
+-}
 
 boolexp :: Parser (Exp Bool)
 boolexp = chainl1 boolterm orop
@@ -120,6 +143,12 @@ relop = (reservedOp lis "==" >> return Eq)
 -----------------------------------
 --- Parser de comandos
 -----------------------------------
+
+{-
+Escribimos el parser en base a esta gramática desambiguada
+comm     ::= comm ';' commterm | commterm
+commterm ::= 'skip' | ifcmd | repeatcmd | assigncmd
+-}
 
 comm :: Parser Comm
 comm = chainl1 commterm seqop
